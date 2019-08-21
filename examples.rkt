@@ -24,14 +24,15 @@
       [(just? m) (f (just-value m))]
       [(nothing? m) (nothing)])))
 
-(define-monad-lambda monad-join (M A)
+(define-monad-library monad-stdlib (M A)
+  (export join)
+
   (: join (All (A) (-> (M (M A)) (M A))))
   (define (join mm)
-    (bind mm (lambda ([m : (M A)]) m)))
-  join)
+    (bind mm (lambda ([m : (M A)]) m))))
 
 (with-monad (Maybe A) maybe-monad
-  (define join (monad-join Maybe maybe-monad))
+  (monad-stdlib Maybe maybe-monad)
   (join (join (return (return (return 42))))))
 
 (define-monad list-monad (Listof A)
@@ -42,7 +43,7 @@
     (append-map f m)))
 
 (with-monad (Listof A) list-monad
-  (define join (monad-join Listof list-monad))
+  (monad-stdlib Listof list-monad)
   (join (join (return (return (return 42))))))
 
 (struct (A) right ([value : A]) #:prefab)

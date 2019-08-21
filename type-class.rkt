@@ -14,11 +14,11 @@
                                (string->symbol
                                 (string-append "with-"
                                                (symbol->string (syntax->datum #'name)))))]
-                   [define-name-lambda
+                   [define-name-library
                      (datum->syntax
                       #'k
                       (string->symbol
-                       (string-append "define-" (symbol->string (syntax->datum #'name)) "-lambda")))]
+                       (string-append "define-" (symbol->string (syntax->datum #'name)) "-library")))]
                    [(expr ...) (generate-temporaries #'(method ...))]
                    [(n ...) (range (length (syntax->list #'(method ...))))])
        #'(begin
@@ -43,17 +43,23 @@
                     (define #,(datum->syntax #'k2 'method) : type #,(nth-cdr+car #'s n)) ...
                     body body* (... ...))]))
 
-           (define-syntax (define-name-lambda stx2)
-             (define (nth-cdr+car stx3 m)
-               (if (zero? m)
-                   #`(car #,stx3)
-                   (nth-cdr+car #`(cdr #,stx3) (sub1 m))))
+           (define-syntax (define-name-library stx2)
              (syntax-case stx2 ()
-               [(k2 name2 (T2 A (... ...)) body body* (... ...))
-                #`(define-syntax-rule (name2 T-imp s)
-                    (let ()
-                      (define-type (T A (... ...)) (T-imp A (... ...)))
-                      (define-type (T2 A (... ...)) (T-imp A (... ...)))
-                      (define #,(datum->syntax #'k2 'method) : type #,(nth-cdr+car #'s n)) ...
-                      body body* (... ...)))]))))]))
+               [(k2 name2 (T2 A (... ...))
+                    (export f (... ...))
+                    body body* (... ...))
+                #`(define-syntax (name2 stx3)
+                    (define (nth-cdr+car stx3 m)
+                      (if (zero? m)
+                          #`(car #,stx3)
+                          (nth-cdr+car #`(cdr #,stx3) (sub1 m))))
+                    (syntax-case stx3 ()
+                      [(k3 T-imp s)
+                       #`(define-values (#,(datum->syntax #'k3 'f) (... ...))
+                           (let ()
+                             (define-type (T A (... ...)) (T-imp A (... ...)))
+                             (define-type (T2 A (... ...)) (T-imp A (... ...)))
+                             (define #,(datum->syntax #'k2 'method) : type #,(nth-cdr+car #'s n)) ...
+                             body body* (... ...)
+                             (values f (... ...))))]))]))))]))
 (provide define-type-class)
