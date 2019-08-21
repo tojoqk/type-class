@@ -54,11 +54,11 @@
                           #`(car #,stx3)
                           (nth-cdr+car #`(cdr #,stx3) (sub1 m))))
                     (syntax-case stx3 ()
-                      [(k3 T-imp s)
+                      [(k3 (T-imp B ((... ...) (... ...))) s)
                        #`(define-values (#,(datum->syntax #'k3 'f) (... ...))
                            (let ()
                              (define-type (T A (... ...)) (T-imp A (... ...)))
-                             (define-type (T2 A (... ...)) (T-imp A (... ...)))
+                             (define-type (T2 B ((... ...) (... ...))) (T-imp B ((... ...) (... ...))))
                              (define #,(datum->syntax #'k2 'method) : type #,(nth-cdr+car #'s n)) ...
                              body body* (... ...)
                              (values f (... ...))))]))]))))]))
