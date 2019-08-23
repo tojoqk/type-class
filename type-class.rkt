@@ -36,11 +36,14 @@
                (if (zero? m)
                    #`(car #,stx3)
                    (nth-cdr+car #`(cdr #,stx3) (sub1 m))))
-             (syntax-case stx2 ()
-               [(k2 (T-imp A (... ...)) s body body* (... ...))
+             (syntax-case stx2 (import)
+               [(k2 (T-imp A (... ...)) s
+                    (import libs (... ...))
+                    body body* (... ...))
                 #`(let ()
                     (define-type (T A (... ...)) (T-imp A (... ...)))
                     (define #,(datum->syntax #'k2 'method) : type #,(nth-cdr+car #'s n)) ...
+                    (libs (T-imp A (... ...)) s) (... ...)
                     body body* (... ...))]))
 
            (define-syntax (define-name-library stx2)
