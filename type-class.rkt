@@ -63,7 +63,7 @@
                        #`(define-values (#,(datum->syntax #'k3 'f) ...2)
                            (let ()
                              (define-type (T A ...2) (T-imp A ...2))
-                             (define-type (T2 B (...2 ...2)) (T-imp B (...2 ...2)))
+                             (define-type (T2 B ...3) (T-imp B ...3))
                              (define #,(datum->syntax #'k2 'method) : type #,(nth-cdr+car #'s n)) ...
                              body body* ...2
                              (values f ...2)))]))]))))]))
