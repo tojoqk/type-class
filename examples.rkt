@@ -32,7 +32,7 @@
     (bind mm (lambda ([m : (M A)]) m))))
 
 (with-monad (Maybe A) maybe-monad
-  (monad-stdlib (Maybe A) maybe-monad)
+  (import monad-stdlib)
   (join (join (return (return (return 42))))))
 
 (define-monad list-monad (Listof A)
@@ -43,7 +43,7 @@
     (append-map f m)))
 
 (with-monad (Listof A) list-monad
-  (monad-stdlib (Listof A) list-monad)
+  (import monad-stdlib)
   (join (join (return (return (return 42))))))
 
 (struct (A) right ([value : A]) #:prefab)
