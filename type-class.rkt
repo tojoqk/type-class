@@ -44,7 +44,7 @@
                     body body* (... ...))]))
 
            (define-syntax (define-name-library stx2)
-             (syntax-case stx2 ()
+             (syntax-case stx2 (export)
                [(k2 name2 (T2 A (... ...))
                     (export f (... ...))
                     body body* (... ...))
