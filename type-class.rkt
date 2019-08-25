@@ -2,7 +2,7 @@
 (require (for-syntax racket/list))
 
 (define-syntax (define-type-class stx)
-  (syntax-case stx ()
+  (syntax-case stx (:)
     [(k name T [method : type] ...)
      (with-syntax ([define-name (datum->syntax
                                  #'k

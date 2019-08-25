@@ -19,7 +19,7 @@
        #'(monad-do* bind expr ...))]))
 
 (define-syntax (monad-do* stx)
-  (syntax-case stx (<- let =>)
+  (syntax-case stx (<- let => :)
     [(_ bind (let var : T expr) rest ...)
      #'(let ([var : T expr])
          (monad-do* bind rest ...))]
