@@ -3,7 +3,7 @@
 
 (define-syntax (define-type-class stx)
   (syntax-case stx ()
-    [(k name T ([method : type] ...))
+    [(k name T [method : type] ...)
      (with-syntax ([define-name (datum->syntax
                                  #'k
                                  (string->symbol
@@ -21,7 +21,6 @@
                        (string-append "define-" (symbol->string (syntax->datum #'name)) "-library")))]
                    [...2 #'(... ...)]
                    [...3 #'((... ...) (... ...))]
-                   [(expr ...) (generate-temporaries #'(method ...))]
                    [(n ...) (range (length (syntax->list #'(method ...))))])
        #'(begin
            (define-syntax (define-name stx2)
@@ -30,16 +29,17 @@
                 #`(define name2
                     (let ()
                       (define-type (T A ...2) (T-imp A ...2))
+                      (: #,(datum->syntax #'k2 'method) : type) ...
                       body body* ...2
-                      (list (ann  #,(datum->syntax #'k2 'method) : type) ...)))]))
-           
+                      (list #,(datum->syntax #'k2 'method) ...)))]))
+
            (define-syntax (with-name stx2)
              (define (nth-cdr+car stx3 m)
                (if (zero? m)
                    #`(car #,stx3)
                    (nth-cdr+car #`(cdr #,stx3) (sub1 m))))
              (syntax-case stx2 (import)
-               [(k2 (T-imp A ...2) s
+               [(k2 s (T-imp A ...2)
                     (import libs ...2)
                     body body* ...2)
                 #`(let ()
