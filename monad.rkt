@@ -19,7 +19,7 @@
        #'(monad-do* bind expr ...))]))
 
 (define-syntax (monad-do* stx)
-  (syntax-case stx (<- let)
+  (syntax-case stx (<- let =>)
     [(_ bind (let var : T expr) rest ...)
      #'(let ([var : T expr])
          (monad-do* bind rest ...))]
@@ -27,11 +27,11 @@
      #'(bind expr
              (lambda ([var : T])
                (monad-do* bind rest ...)))]
-    [(_ bind expr rest rest* ...)
+    [(_ bind [=> expr] rest rest* ...)
      #'(bind expr
              (lambda ([_ : Any])
                (monad-do* bind rest rest* ...)))]
-    [(_ bind expr) #'expr]))
+    [(_ bind [=> expr]) #'expr]))
 
 (module+ test
   (define-monad list-monad (Listof A)
@@ -45,12 +45,12 @@
     (define (ap mf m)
       (monad-do (<- f : (-> A B) mf)
                 (<- x : A m)
-                (return (f x))))
-
+                (=> (return (f x)))))
+    
     (: join (All (A) (-> (M (M A)) (M A))))
     (define (join mm)
       (monad-do (<- m : (M A) mm)
-                m)))
+                (=> m))))
 
   (with-monad list-monad (Listof A)
     (import monad-stdlib)
@@ -69,7 +69,7 @@
     (check-equal? (monad-do (<- x : Natural (list 1 2))
                             (<- y : Symbol (list 'a 'b))
                             (let l : (List Natural Symbol) (list x y))
-                            (return l))
+                            (=> (return l)))
                   (list (list 1 'a)
                         (list 1 'b)
                         (list 2 'a)
